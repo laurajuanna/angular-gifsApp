@@ -18,7 +18,18 @@ export class GifsService {
     return [...this._historial];
   }
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+
+    this._historial = JSON.parse(localStorage.getItem('historial')!) || [];
+    // lo que hace es parsear el string a formato JSON
+    // el signo ! hace que typescript confie en lo que va a traer, tipo el any
+    // si trae null, muestra un array vacío
+    // La de abajo es otra forma de hacer lo mismo
+    /*if (localStorage.getItem('historial')) {
+      this._historial = JSON.parse(localStorage.getItem('historial')!)
+    }*/
+    this.resultados = JSON.parse(localStorage.getItem('resultados')!) || [];
+  }
 
   buscarGifs(query: string = '') {
 
@@ -28,6 +39,8 @@ export class GifsService {
     if (!this._historial.includes(query)) {
       this._historial.unshift(query); // unshift pushea al inicio del array
       this._historial = this._historial.splice(0, 10); // solo muestra 10
+
+      localStorage.setItem('historial', JSON.stringify(this._historial));
     }
 
     // en lugar de un fetch o un async-await
@@ -39,7 +52,7 @@ export class GifsService {
       .subscribe((resp) => {
         console.log(resp.data);
         this.resultados = resp.data;
-        resp.pagination.count
+        localStorage.setItem('resultados', JSON.stringify(this.resultados))
       });
 
   }
