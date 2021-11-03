@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Gif, SearchGifsResponse } from '../interface/gifs.interface';
 
 
 @Injectable({
@@ -11,8 +12,7 @@ export class GifsService {
   private apiKey: string = 'WlxOmZkXbYPxKhChgMoP2IUBNQOqTC20';
   private _historial: string[] = [];
 
-  // TODO: Cambiar any por su tipo correspondiente
-  public resultados: any[] = [];
+  public resultados: Gif[] = [];
 
   get historial() {
     return [...this._historial];
@@ -35,10 +35,11 @@ export class GifsService {
     // import { HttpClientModule } from '@angular/common/http';
     // y agregamos el module en el import de abajo..
     // también importamos HttpClient en los imports de este mismo archivo
-    this.http.get(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${query}&limit=15`)
-      .subscribe((resp: any) => {
+    this.http.get<SearchGifsResponse>(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${query}&limit=15`)
+      .subscribe((resp) => {
         console.log(resp.data);
         this.resultados = resp.data;
+        resp.pagination.count
       });
 
   }
