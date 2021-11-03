@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Gif, SearchGifsResponse } from '../interface/gifs.interface';
 
 
@@ -10,6 +10,7 @@ import { Gif, SearchGifsResponse } from '../interface/gifs.interface';
 export class GifsService {
 
   private apiKey: string = 'WlxOmZkXbYPxKhChgMoP2IUBNQOqTC20';
+  private servicioUrl: string = 'https://api.giphy.com/v1/gifs';
   private _historial: string[] = [];
 
   public resultados: Gif[] = [];
@@ -43,14 +44,19 @@ export class GifsService {
       localStorage.setItem('historial', JSON.stringify(this._historial));
     }
 
+    const params = new HttpParams()
+      .set('api_key', this.apiKey)
+      .set('limit', '15')
+      .set('q', query);
+
     // en lugar de un fetch o un async-await
     // hacemos este import en el app.module.ts
     // import { HttpClientModule } from '@angular/common/http';
     // y agregamos el module en el import de abajo..
     // también importamos HttpClient en los imports de este mismo archivo
-    this.http.get<SearchGifsResponse>(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${query}&limit=15`)
+    this.http.get<SearchGifsResponse>(`${this.servicioUrl}/search`, { params })
       .subscribe((resp) => {
-        console.log(resp.data);
+        //console.log(resp.data);
         this.resultados = resp.data;
         localStorage.setItem('resultados', JSON.stringify(this.resultados))
       });
